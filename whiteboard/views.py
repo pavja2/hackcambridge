@@ -1,13 +1,24 @@
-from flask import request, url_for, send_from_directory
+from flask import request, url_for, send_from_directory, render_template
 from werkzeug.utils import secure_filename
 from whiteboard import app
+from whiteboard.models import *
+from whiteboard.analysis import analyze_image
 import os
 import json
 
-@app.route('/')
-def index():
-    return "Test Page"
 
+@app.cli.command("initdb")
+def initdb():
+    """
+    Creates a basic empty database / deletes existing one
+    """
+    db.drop_all()
+    db.create_all()
+
+
+@app.route('/', methods=["GET"])
+def index():
+    return app.send_static_file('userinterface.html')
 
 @app.route('/imgupload', methods=["POST"])
 def image_upload():
@@ -23,6 +34,7 @@ def image_upload():
         if file:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            analyze_image(filename)
             return "Uploaded to " + str(url_for('uploaded_file', filename=filename))
     else:
         return "Method not allowed", 405
@@ -34,10 +46,9 @@ def uploaded_file(filename):
 @app.route('/messages')
 def message_view():
     messages = []
-    sample = {
-        "message": "Here's a wikipedia page about John Locke!",
-        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/JohnLocke.png/330px-JohnLocke.png",
-        "link": "https://en.wikipedia.org/wiki/John_Locke"
-    }
-    messages.append(sample)
-    return json.dumps(messages), 200
+    for message in Message.query.all():
+        messages.append(message.to_dict())
+        message.viewed = True
+        db.session.commit()
+    message_dict = {"messages": messages}
+    return json.dumps(message_dict), 200
