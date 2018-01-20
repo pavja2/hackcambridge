@@ -2,7 +2,7 @@
 import requests
 import json
 
-def WikipediaAPI(keyphrase):
+def WikipediaAPIfunc (keyphrase):
 
 
 ############################ ACCESS TITLE AND EXTRACT ############################
@@ -10,6 +10,7 @@ def WikipediaAPI(keyphrase):
         "action" : "query",
         "prop" : "extracts",
         "exchars" : 200,
+        "redirects" : "",
         "exlimit" : 1,
         "explaintext" : "",
         "format" : "json",
@@ -32,8 +33,12 @@ def WikipediaAPI(keyphrase):
 
             #get title and extract (will only loop once)
             for key in result["query"]["pages"]:
-                title = result["query"]["pages"][key]["title"]
-                extract = result["query"]["pages"][key]["extract"]
+                if key != "-1":
+                    title = result["query"]["pages"][key]["title"]
+                    extract = result["query"]["pages"][key]["extract"]
+                else:
+                    title = None
+                    extract = None
         else:
             print("Error code: %d" % (response.status_code))
             print("Message: %s" % (response.json()))
@@ -44,6 +49,7 @@ def WikipediaAPI(keyphrase):
     params = {
         "action" : "query",
         "prop" : "pageimages",
+        "redirects" : "",
         "format" : "json",
         "titles" : keyphrase,
         "piprop" : "thumbnail",
@@ -66,12 +72,17 @@ def WikipediaAPI(keyphrase):
 
             #get article image filename
             for key in result["query"]["pages"]:
-                filename = result["query"]["pages"][key]["thumbnail"]["source"]
+                if key != "-1" and "thumbnail" in result["query"]["pages"][key]:
+                    imurl = result["query"]["pages"][key]["thumbnail"]["source"]
+                else:
+                    imurl = None
+
         else:
             print("Error code: %d" % (response.status_code))
             print("Message: %s" % (response.json()))
         break
 
+    return (title, extract, imurl)
 
 #Example Function Run
-# WikipediaAPI("Elon Musk")
+# WikipediaAPIfunc("Elon Musk")

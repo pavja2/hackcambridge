@@ -83,7 +83,7 @@ Main function to pass image stored in file path to Microsoft Vision API
 
 file_path = Path to JPEG image file on server
 """
-def OCRAPI(file_path):
+def OCRAPIfunc(file_path):
     text = ""
     with open(file_path, 'rb') as f:
         data = f.read()
@@ -131,13 +131,6 @@ def SpellCheckAPI(text):
     headers = {'Ocp-Apim-Subscription-Key': key,
     'Content-Type': 'application/x-www-form-urlencoded'}
 
-    # The headers in the following example
-    # are optional but should be considered as required:
-    #
-    # X-MSEdge-ClientIP: 999.999.999.999
-    # X-Search-Location: lat: +90.0000000000000;long: 00.0000000000000;re:100.000000000000
-    # X-MSEdge-ClientID: <Client ID from Previous Response Goes Here>
-
     conn = http.client.HTTPSConnection(host)
     params = urllib.parse.urlencode (params)
     conn.request ("POST", path, params, headers)
@@ -151,4 +144,4 @@ def SpellCheckAPI(text):
     return text
 
 #Example Usage
-OCRAPI("test.jpg")
+#print(OCRAPIfunc("test.jpg"))
