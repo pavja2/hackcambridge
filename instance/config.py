@@ -1,0 +1,1 @@
+UPLOAD_FOLDER = 'C:/dev/hack_cambridge/whiteboard/uploads/'
