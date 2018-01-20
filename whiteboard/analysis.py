@@ -36,9 +36,9 @@ def entity_based_analyzer(text):
     return len(messages)
 
 def nlp_analyzer(filename):
-    titles, extracts, images = NLPfun(filename)
+    titles, extracts, images, urls = NLPfun(filename)
     for i in range(0, len(titles)):
-        create_and_save_message(message_title="Some info about " + str(titles[i]), message_text=str(extracts[i]), img_url=images[i], message_link="")
+        create_and_save_message(message_title="Some info about " + str(titles[i]), message_text=str(extracts[i]), img_url=images[i], message_link=urls[i])
     return len(titles)
 
 def create_and_save_message(message_title="", message_text="", img_url="", message_link=""):
