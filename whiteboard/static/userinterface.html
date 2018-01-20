@@ -1,0 +1,28 @@
+<head>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/userinterface.css">
+    <script src="/static/js/jquery-3.2.1.min.js"></script>
+    <script src="/static/js/jsviews.min.js"></script>
+    <script src="/static/js/userinterface.js"></script>
+
+    <script id="messageListTemplate" type="text/x-jsrender">
+        {^{for messages}}
+            <div>
+                <br>
+                <i>{^{:message_text}}</i>
+                <br>
+                <span>{^{:message_link}}</span>
+                <br>
+                <img src="{^{:img_url}}"></img>
+                <br>
+            </div>
+        {{/for}}
+    </script>
+</head>
+<body>
+
+<div id="message-list-div">
+
+</div>
+
+</body>
