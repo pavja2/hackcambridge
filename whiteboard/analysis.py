@@ -2,6 +2,8 @@ from whiteboard.models import Message, db
 from whiteboard.entity_linking import entity_linked_messages
 from whiteboard.OCRAPI import OCRAPIfunc
 from whiteboard.NLP import NLPfun
+from whiteboard.NLPAPI import keyWordExtractorAPI
+from whiteboard.aws_comprehend import get_key_terms, get_named_entities
 import boto3
 
 
@@ -15,6 +17,12 @@ def analyze_image(filename):
     message_count = 0
     text = get_plaintext(filename)
     print(text)
+    print("AWS")
+    print(get_key_terms(text))
+    print(get_named_entities(text))
+    print("NLPAPI")
+    print(keyWordExtractorAPI(text))
+    print("API_TEST_DONE")
     #message_count += transcription_analyzer(text)
     message_count+= entity_based_analyzer(text)
     message_count+= nlp_analyzer(filename)
@@ -30,10 +38,10 @@ def entity_based_analyzer(text):
 def nlp_analyzer(filename):
     titles, extracts, images = NLPfun(filename)
     for i in range(0, len(titles)):
-        create_and_save_message(message_text="TITLE: " + str(titles[i]) + "\nEXTRACT: " + str(extracts[i]), img_url=images[i], message_link="")
+        create_and_save_message(message_title="Some info about " + str(titles[i]), message_text=str(extracts[i]), img_url=images[i], message_link="")
     return len(titles)
 
-def create_and_save_message(message_text="", img_url="", message_link=""):
+def create_and_save_message(message_title="", message_text="", img_url="", message_link=""):
     """
     Adds a message to the database
     :param message_text: the text that will be displayed to a user
@@ -41,7 +49,7 @@ def create_and_save_message(message_text="", img_url="", message_link=""):
     :param message_link: the link the user navigates to when they click on a message
     """
 
-    test_message = Message(message_text=message_text, img_url=img_url, message_link=message_link)
+    test_message = Message(message_title=message_title, message_text=message_text, img_url=img_url, message_link=message_link)
     db.session.add(test_message)
     db.session.commit()
 

@@ -5,12 +5,12 @@ from whiteboard.models import *
 from whiteboard.analysis import analyze_image
 import base64
 import hashlib
-from io import BytesIO
-from whiteboard.OCRAPI import OCRAPIfunc
+from whiteboard.spark_integrator import share_knowledge_with_class
 
 import os
 import json
 
+class_chat_room = 'a51b4260-fe2d-11e7-9895-63f133b158d1'
 
 @app.cli.command("initdb")
 def initdb():
@@ -62,6 +62,22 @@ def base64_upload():
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+
+@app.route('/share_message', methods=["POST"])
+def share_message():
+    if request.method == "POST":
+        if 'id' not in request.form:
+            return "Missing ID", 502
+
+        output_message = Message.query.filter_by(id=request.form["id"]).first()
+        if output_message is None:
+            return "Invalid ID", 502
+        share_knowledge_with_class(output_message, class_chat_room)
+        output_message.shared = True
+        db.session.commit()
+        return "Message Shared", 200
+
 
 @app.route('/messages')
 def message_view():

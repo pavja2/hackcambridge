@@ -24,6 +24,6 @@ def get_named_entities(text):
     api_result = comprehend.detect_entities(Text=text, LanguageCode='en')
     if "Entities" in api_result:
         for entity in api_result["Entities"]:
-            if "Score" in entity and entity["Score"] > .9 and "Text" in entity and "Type" in entity:
+            if "Score" in entity and entity["Score"] > .1 and "Text" in entity and "Type" in entity:
                 terms.append((entity["Text"], entity["Type"]))
     return terms

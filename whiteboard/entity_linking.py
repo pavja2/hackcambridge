@@ -41,7 +41,8 @@ def entity_linked_messages(text):
     for entity in entity_list:
         if entity[1] != "":
             wiki_link = wiki_base + quote(entity[1])
-            new_message = Message(message_text=entity[0], img_url="", message_link=wiki_link)
+            new_message = Message(message_title="Here's the wiki for: " + str(entity[0]), message_text="",
+                                  img_url="", message_link=wiki_link)
             message_list.append(new_message)
     return message_list
 
