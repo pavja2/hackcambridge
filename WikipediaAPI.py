@@ -33,6 +33,7 @@ def WikipediaAPIfunc (keyphrase):
 
             #get title and extract (will only loop once)
             for key in result["query"]["pages"]:
+                id = key
                 if key != "-1":
                     title = result["query"]["pages"][key]["title"]
                     extract = result["query"]["pages"][key]["extract"]
@@ -82,7 +83,43 @@ def WikipediaAPIfunc (keyphrase):
             print("Message: %s" % (response.json()))
         break
 
-    return (title, extract, imurl)
+############################ GET WIKIPEDIA ARTICLE LINK ############################
+
+    params = {
+        "action" : "query",
+        "prop" : "info",
+        "pageids" : id,
+        "format" : "json",
+        "inprop" : "url"
+    }
+
+    while True:
+        response = requests.get("https://en.wikipedia.org/w/api.php",params)
+        if response.status_code == 429:
+            print("Message: %s" % (response.json()))
+            if retries <= _maxNumRetries:
+                time.sleep(1)
+                retries += 1
+                continue
+            else:
+                print('Error: failed after retrying!')
+                break
+        elif response.status_code == 200:
+            result = response.json()
+
+            #get article image filename
+            for key in result["query"]["pages"]:
+                if "missing" in key or id == "-1":
+                    url = None
+                else:
+                    url = result["query"]["pages"][key]["fullurl"]
+
+        else:
+            print("Error code: %d" % (response.status_code))
+            print("Message: %s" % (response.json()))
+        break
+
+    return (title, extract, imurl, url)
 
 #Example Function Run
 # WikipediaAPIfunc("Elon Musk")
