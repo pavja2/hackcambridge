@@ -49,6 +49,7 @@ Main function to interpret text words
 
 word = Text word to interpret
 """
+"""
 def NLPAPI(word):
     params =   {'query' : word,
                 'complete' : 1,
@@ -66,4 +67,55 @@ def NLPAPI(word):
     print(logprob)
     print(result)
 
-NLPAPI("interactive network directory")
+
+def keyWordExtractor(text):
+    from rake_nltk import Rake
+
+    r = Rake() # Uses stopwords for english from NLTK, and all puntuation characters.
+
+    # If you want to provide your own set of stop words and punctuations to
+    # r = Rake(<list of stopwords>, <string of puntuations to ignore>)
+
+    r.extract_keywords_from_text(text)
+
+    print(r.get_ranked_phrases()) # To get keyword phrases ranked highest to lowest.
+"""
+
+def keyWordExtractorAPI(text):
+    import http.client, urllib, base64
+    import json
+
+    headers = {
+    # Request headers
+    'Content-Type': 'application/json',
+    'Ocp-Apim-Subscription-Key': '3ca4fd37d935431ba6a1c8bf28eef522',
+    }
+
+    params = urllib.parse.urlencode({
+    })
+
+    body = {
+            "documents": [
+                {
+                    "language": "en",
+                    "id": "1",
+                    "text": text
+                }
+            ]
+        }
+
+    try:
+        conn = http.client.HTTPSConnection('westcentralus.api.cognitive.microsoft.com')
+        conn.request("POST", "/text/analytics/v2.0/keyPhrases?%s" % params, json.dumps(body), headers)
+        response = conn.getresponse()
+        data = json.loads(response.read())
+        keyphrases = []
+        for k in data["documents"][0]["keyPhrases"]:
+            keyphrases.append(k)
+        conn.close()
+        return keyphrases
+    except Exception as e:
+        print(e)
+
+#Example Use
+#print(keyWordExtractorAPI("It is expected that you will be familiar with most of the following I The notion polynomial time, space, etc. I Big O notation I Basic probability theory - expectation, independence, etc. It’d be helpful if (though not necessary that) you’ve seen at least some of the following I Basic complexity theory such as NP-completeness I Applied Machine Learning I Optimisation algorithms - Linear Programming"))
