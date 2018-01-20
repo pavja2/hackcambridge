@@ -6,7 +6,7 @@ from whiteboard.analysis import analyze_image
 import base64
 import hashlib
 from io import BytesIO
-from whiteboard.OCRAPI import OCRAPI
+from whiteboard.OCRAPI import OCRAPIfunc
 
 import os
 import json

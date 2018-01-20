@@ -1,6 +1,7 @@
 from whiteboard.models import Message, db
 from whiteboard.entity_linking import entity_linked_messages
-from whiteboard.OCRAPI import OCRAPI
+from whiteboard.OCRAPI import OCRAPIfunc
+from whiteboard.NLP import NLPfun
 import boto3
 
 
@@ -16,6 +17,7 @@ def analyze_image(filename):
     print(text)
     #message_count += transcription_analyzer(text)
     message_count+= entity_based_analyzer(text)
+    message_count+= nlp_analyzer(filename)
     return 1
 
 def entity_based_analyzer(text):
@@ -24,6 +26,12 @@ def entity_based_analyzer(text):
         db.session.add(message)
     db.session.commit()
     return len(messages)
+
+def nlp_analyzer(filename):
+    titles, extracts, images = NLPfun(filename)
+    for i in range(0, len(titles)):
+        create_and_save_message(message_text="TITLE: " + str(titles[i]) + "\nEXTRACT: " + str(extracts[i]), img_url=images[i], message_link="")
+    return len(titles)
 
 def create_and_save_message(message_text="", img_url="", message_link=""):
     """
@@ -42,5 +50,5 @@ def transcription_analyzer(text):
     return 1
 
 def get_plaintext(filename):
-    message_string = OCRAPI(filename)
+    message_string = OCRAPIfunc(filename)
     return message_string
