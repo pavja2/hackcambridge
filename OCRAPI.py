@@ -4,6 +4,9 @@ import requests
 import cv2
 import operator
 import numpy as np
+import http.client
+import urllib.parse
+import json
 
 # Variables
 #url of Microsoft Vision API
@@ -113,5 +116,39 @@ def OCRAPI(file_path):
             words = lines[i]['words']
             for j in range(len(words)):
                 text += words[j]['text'] + ' '
-            text = text[:-1] + '\n'
+            #text = text[:-1] + '\n'
+    return SpellCheckAPI(text)
+
+def SpellCheckAPI(text):
+
+    params = {'mkt': 'en-US', 'mode': 'proof', 'text': text}
+
+    key = '295d1789c7024a24842a0ee62e1947d1'
+
+    host = 'api.cognitive.microsoft.com'
+    path = '/bing/v7.0/spellcheck'
+
+    headers = {'Ocp-Apim-Subscription-Key': key,
+    'Content-Type': 'application/x-www-form-urlencoded'}
+
+    # The headers in the following example
+    # are optional but should be considered as required:
+    #
+    # X-MSEdge-ClientIP: 999.999.999.999
+    # X-Search-Location: lat: +90.0000000000000;long: 00.0000000000000;re:100.000000000000
+    # X-MSEdge-ClientID: <Client ID from Previous Response Goes Here>
+
+    conn = http.client.HTTPSConnection(host)
+    params = urllib.parse.urlencode (params)
+    conn.request ("POST", path, params, headers)
+    response = conn.getresponse ()
+    js = json.loads(response.read())
+
+    for f in js["flaggedTokens"]:
+        if f["suggestions"][0]["score"] > 0.8:
+            text = text.replace(f["token"],f["suggestions"][0]["suggestion"])
+
     return text
+
+#Example Usage
+OCRAPI("test.jpg")
