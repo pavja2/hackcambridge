@@ -18,12 +18,12 @@ params = {
 }
 
 def split_images_from_slide_to_entities(filename):
-    cmd = subprocess.call(['splitter/multicrop.sh', '-d', '30', filename, 'splitter/splits/image_cut.jpg'])
+    cmd = subprocess.call(['/home/ubuntu/hackcambrdige/whiteboard/splitter/multicrop.sh', '-d', '30', filename, '/home/ubuntu/hackcambrdige/whiteboard/splitter/splits/image_cut.jpg'])
     entity_list = []
     if cmd == 0:
-        for filename in os.listdir('splitter/splits/'):
-            entity_list.extend(get_unique_entities('splitter/splits/'+ str(filename)))
-        files = glob.glob('/splitter/splits/*')
+        for filename in os.listdir('/home/ubuntu/hackcambrdige/whiteboard/splitter/splits/'):
+            entity_list.extend(get_unique_entities('/home/ubuntu/hackcambrdige/whiteboard/splitter/splits/'+ str(filename)))
+        files = glob.glob('/home/ubuntu/hackcambrdige/whiteboard/splitter/splits/*')
         for f in files:
             os.remove(f)
     return entity_list

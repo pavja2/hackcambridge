@@ -47,25 +47,6 @@ def analyze_image(filename):
                                                           img_url="http://via.placeholder.com/350x150.png",
                                                           message_link=url)
 
-    #MS Image Splitting
-    # IF buggy, uncomment due to OS compatibility challenges
-    specialized_entities = split_images_from_slide_to_entities(filename)
-    for entity in specialized_entities:
-        if entity not in wiki_conflicts:
-            wiki_conflicts.extend(wikify_entry(entity, wiki_conflicts))
-        if entity not in author_conflicts and len(entity.split()) <= 4:
-            if academiaTest(entity):
-                author_conflicts.append(entity)
-                url, title, authors, date = CrossRefAPIfunc(entity)
-                if url and title is not None:
-                    if Message.query.filter_by(message_title="Relevant Publication: " + str(title),
-                                               message_text=  "Authors: " +  str(authors) + " Date: " + str(date),
-                                               message_link=url).first() is None:
-                        create_and_save_message("Relevant Publication: " + str(title),
-                                                          "Authors: " +  str(authors) + " Date: " + str(date),
-                                                          img_url="http://via.placeholder.com/350x150.png",
-                                                          message_link=url)
-
     # MS Named Entities
     for entity in keyWordExtractorAPI(text):
         if entity not in wiki_conflicts:
@@ -85,6 +66,29 @@ def analyze_image(filename):
 
     # Analyze Country information
     country_analyzer(text, country_conflicts)
+
+    #MS Image Splitting
+    # IF buggy, uncomment due to OS compatibility challenges
+    try:
+        specialized_entities = split_images_from_slide_to_entities(filename)
+    except:
+        specialized_entities = []
+    for entity in specialized_entities:
+        if entity not in wiki_conflicts:
+            wiki_conflicts.extend(wikify_entry(entity, wiki_conflicts))
+        if entity not in author_conflicts and len(entity.split()) <= 4:
+            if academiaTest(entity):
+                author_conflicts.append(entity)
+                url, title, authors, date = CrossRefAPIfunc(entity)
+                if url and title is not None:
+                    if Message.query.filter_by(message_title="Relevant Publication: " + str(title),
+                                               message_text=  "Authors: " +  str(authors) + " Date: " + str(date),
+                                               message_link=url).first() is None:
+                        create_and_save_message("Relevant Publication: " + str(title),
+                                                          "Authors: " +  str(authors) + " Date: " + str(date),
+                                                          img_url="http://via.placeholder.com/350x150.png",
+                                                          message_link=url)
+
     return 1
 
 
