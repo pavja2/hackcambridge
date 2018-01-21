@@ -10,6 +10,7 @@ class Message(db.Model):
 
     viewed = db.Column(db.Boolean(), default=False)
     shared = db.Column(db.Boolean(), default=False)
+    hidden = db.Column(db.Boolean(), default=False)
 
     def __repr__(self):
         return "<MESSAGE %r>" % self.message_text

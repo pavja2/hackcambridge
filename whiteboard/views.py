@@ -21,6 +21,10 @@ def initdb():
     db.create_all()
 
 
+@app.route('/testui')
+def uitest():
+    return app.send_static_file('ui_design.html')
+
 @app.route('/', methods=["GET"])
 def index():
     return app.send_static_file('userinterface.html')
@@ -79,12 +83,23 @@ def share_message():
         return "Message Shared", 200
 
 
+@app.route('/hide_message', methods=["POST"])
+def hide_message():
+    if request.method == "POST":
+        print(request.form)
+        if 'id' not in request.form:
+            return "Missing ID", 502
+        output_message = Message.query.filter_by(id=request.form["id"]).first()
+        output_message.hidden = True
+        db.session.commit()
+        return "Message Hidden", 200
+
 @app.route('/messages')
 def message_view():
     messages = []
-    for message in Message.query.all():
+    for message in Message.query.filter_by(hidden=False).all():
         messages.append(message.to_dict())
         message.viewed = True
         db.session.commit()
-    message_dict = {"messages": messages}
-    return json.dumps(message_dict), 200
+    output_dict = {"results" : {"messages": messages}}
+    return json.dumps(output_dict), 200

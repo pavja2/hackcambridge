@@ -1,0 +1,18 @@
+.thumbnail-image{
+    max-height: 64px;
+    max-width: 64px;
+    height: auto;
+    width: auto;
+}
+
+.message-link{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.dropdown { display: none; }
+
+.message:hover .dropdown, .message.hover .dropdown { display: block; }
