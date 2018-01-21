@@ -14,7 +14,7 @@ def academiaTest(keyword):
     }
     url = service_url + '?' + urllib.parse.urlencode(params)
     response = json.loads(urllib.request.urlopen(url).read())
-    if len(response["itemListElement"]) > 0 and float(response["itemListElement"][0]["resultScore"]) > 300.0:
+    if len(response["itemListElement"]) > 0 and float(response["itemListElement"][0]["resultScore"]) > 100.0:
         types = response["itemListElement"][0]["result"]["@type"]
 
         if "Person" in types:
