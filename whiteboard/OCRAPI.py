@@ -133,10 +133,10 @@ def SpellCheckAPI(text):
     conn.request ("POST", path, params, headers)
     response = conn.getresponse ()
     js = json.loads(response.read())
-
-    for f in js["flaggedTokens"]:
-        if f["suggestions"][0]["score"] > 0.8:
-            text = text.replace(f["token"],f["suggestions"][0]["suggestion"])
+    if "flaggedTokens" in js:
+        for f in js["flaggedTokens"]:
+            if f["suggestions"][0]["score"] > 0.8:
+                text = text.replace(f["token"],f["suggestions"][0]["suggestion"])
 
     return text
 
