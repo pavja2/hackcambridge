@@ -2,7 +2,7 @@ import json
 import requests
 import subprocess
 import os
-from whiteboard import app
+#from whiteboard import app
 
 uri_base = 'http://westcentralus.api.cognitive.microsoft.com'
 
@@ -50,4 +50,4 @@ def get_unique_entities(filename):
     return unique_entities
 
 if  __name__ == '__main__':
-    print(split_images_from_slide('/home/ubuntu/monument_screen.JPG'))
+    print(split_images_from_slide('/home/ubuntu/uploads/monument_screen.JPG'))
