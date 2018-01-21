@@ -9,6 +9,7 @@ from whiteboard.WikipediaAPI import WikipediaAPIfunc
 from whiteboard.KnowledgeGraphAPI import academiaTest
 from whiteboard.CrossRefAPI import CrossRefAPIfunc
 from whiteboard.specialized_microsoft import split_images_from_slide_to_entities
+from whiteboard.periodicTable import ChemRec
 import boto3
 
 
@@ -90,6 +91,14 @@ def analyze_image(filename):
                                                           "Authors: " +  str(authors) + " Date: " + str(date),
                                                           img_url="http://via.placeholder.com/350x150.png",
                                                           message_link=url)
+
+    try:
+        element_list = ChemRec(text)
+    except:
+        element_list = []
+    for entity in element_list:
+        if entity not in wiki_conflicts:
+            wiki_conflicts.extend(wikify_entry(entity, wiki_conflicts))
 
     return 1
 
