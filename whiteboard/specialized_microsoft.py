@@ -2,7 +2,6 @@ import json
 import requests
 import subprocess
 import os
-#from whiteboard import app
 
 uri_base = 'http://westcentralus.api.cognitive.microsoft.com'
 
@@ -17,11 +16,13 @@ params = {
     'language' : 'en'
 }
 
-def split_images_from_slide(filename):
+def split_images_from_slide_to_entities(filename):
     cmd = subprocess.call(['splitter/multicrop.sh', '-d', '30', filename, 'splitter/splits/image_cut.jpg'])
+    entity_list = []
     if cmd == 0:
         for filename in os.listdir('splitter/splits/'):
-            print(get_unique_entities('splitter/splits/'+ str(filename)))
+            entity_list.extend(get_unique_entities('splitter/splits/'+ str(filename)))
+    return entity_list
 
 def get_unique_entities(filename):
     with open(filename, 'rb') as f:
@@ -49,5 +50,5 @@ def get_unique_entities(filename):
                             unique_entities.append(landmark["name"])
     return unique_entities
 
-if  __name__ == '__main__':
-    print(split_images_from_slide('/home/ubuntu/uploads/monument_screen.JPG'))
+#if  __name__ == '__main__':
+#    print(split_images_from_slide('/home/ubuntu/uploads/monument_screen.JPG'))

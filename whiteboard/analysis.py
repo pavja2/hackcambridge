@@ -8,6 +8,7 @@ from whiteboard.country_finder import get_countries_from_text
 from whiteboard.WikipediaAPI import WikipediaAPIfunc
 from whiteboard.KnowledgeGraphAPI import academiaTest
 from whiteboard.CrossRefAPI import CrossRefAPIfunc
+from whiteboard.specialized_microsoft import split_images_from_slide_to_entities
 import boto3
 
 
@@ -28,7 +29,6 @@ def analyze_image(filename):
     #get_microsoft_wikipedia_messages
     wiki_conflicts.extend(entity_based_analyzer(text, conflicts=wiki_conflicts))
 
-
     # AWS Entities
     aws_entities = get_named_entities(text)
     for entity in aws_entities:
@@ -47,6 +47,24 @@ def analyze_image(filename):
                                                           img_url="http://via.placeholder.com/350x150.png",
                                                           message_link=url)
 
+    #MS Image Splitting
+    # IF buggy, uncomment due to OS compatibility challenges
+    specialized_entities = split_images_from_slide_to_entities(filename)
+    for entity in specialized_entities:
+        if entity not in wiki_conflicts:
+            wiki_conflicts.extend(wikify_entry(entity, wiki_conflicts))
+        if entity not in author_conflicts and len(entity.split()) <= 4:
+            if academiaTest(entity):
+                author_conflicts.append(entity)
+                url, title, authors, date = CrossRefAPIfunc(entity)
+                if url and title is not None:
+                    if Message.query.filter_by(message_title="Relevant Publication: " + str(title),
+                                               message_text=  "Authors: " +  str(authors) + " Date: " + str(date),
+                                               message_link=url).first() is None:
+                        create_and_save_message("Relevant Publication: " + str(title),
+                                                          "Authors: " +  str(authors) + " Date: " + str(date),
+                                                          img_url="http://via.placeholder.com/350x150.png",
+                                                          message_link=url)
 
     # MS Named Entities
     for entity in keyWordExtractorAPI(text):
