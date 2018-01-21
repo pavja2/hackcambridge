@@ -44,12 +44,12 @@ def get_unique_entities(filename):
         for match in data["categories"]:
             if "detail" in match and "landmarks" in match["detail"]:
                 for landmark in match["detail"]["landmarks"]:
-                    if "confidence" in landmark and landmark["confidence"] > .2 and "name" in landmark:
+                    if "confidence" in landmark and landmark["confidence"] > .01 and "name" in landmark:
                         if landmark["name"] not in unique_entities:
                             unique_entities.append(landmark["name"])
             if "detail" in match and "celebrities" in match["detail"]:
                 for celebrity in match["celebrities"]:
-                    if "confidence" in celebrity and celebrity["confidence"] > .2 and "name" in celebrity:
+                    if "confidence" in celebrity and celebrity["confidence"] > .01 and "name" in celebrity:
                         if landmark["name"] not in unique_entities:
                             unique_entities.append(landmark["name"])
     return unique_entities

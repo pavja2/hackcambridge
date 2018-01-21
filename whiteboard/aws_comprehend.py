@@ -14,7 +14,7 @@ def get_key_terms(text):
 
     if "KeyPhrases" in api_result:
         for phrase in api_result["KeyPhrases"]:
-            if "Score" in phrase and phrase["Score"] > .1 and "Text" in phrase:
+            if "Score" in phrase and phrase["Score"] > .01 and "Text" in phrase:
                 terms.append(phrase["Text"])
     return terms
 

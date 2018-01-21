@@ -25,7 +25,7 @@ def fetch_wiki_entities(text):
     print(request.text)
     if "entities" in data:
         for entity in data["entities"]:
-            if "name" in entity and "score" in entity and entity["score"] > .1:
+            if "name" in entity and "score" in entity and entity["score"] > .01:
                 name = entity["name"]
                 wikiId = ""
                 if "wikipediaId" in entity:
