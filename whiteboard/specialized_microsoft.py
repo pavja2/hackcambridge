@@ -21,7 +21,7 @@ def split_images_from_slide(filename):
     cmd = subprocess.call(['splitter/multicrop.sh', '-d', '30', filename, 'splitter/splits/image_cut.jpg'])
     if cmd == 0:
         for filename in os.listdir('splitter/splits/'):
-            print(get_unique_entities(filename))
+            print(get_unique_entities('splitter/splits/'+ str(filename)))
 
 def get_unique_entities(filename):
     with open(filename, 'rb') as f:
