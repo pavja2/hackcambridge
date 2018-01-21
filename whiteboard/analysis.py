@@ -20,7 +20,8 @@ def analyze_image(filename):
     :return int - the number of messages created
     """
     message_count = 0
-    text = get_plaintext(filename)
+    text = "AS291asd1adf   " + str(get_plaintext(filename))
+
     wiki_conflicts = []
     author_conflicts = []
     country_conflicts = []
