@@ -2,6 +2,7 @@ import json
 import requests
 import subprocess
 import os
+import glob
 
 uri_base = 'http://westcentralus.api.cognitive.microsoft.com'
 
@@ -22,6 +23,9 @@ def split_images_from_slide_to_entities(filename):
     if cmd == 0:
         for filename in os.listdir('splitter/splits/'):
             entity_list.extend(get_unique_entities('splitter/splits/'+ str(filename)))
+        files = glob.glob('/splitter/splits/*')
+        for f in files:
+            os.remove(f)
     return entity_list
 
 def get_unique_entities(filename):
