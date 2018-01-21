@@ -18,7 +18,7 @@ params = {
 }
 
 def split_images_from_slide_to_entities(filename):
-    cmd = subprocess.call(['/home/ubuntu/hackcambridge/whiteboard/splitter/multicrop.sh', '-d', '30', filename, '/home/ubuntu/hackcambridge/whiteboard/splitter/splits/image_cut.jpg'])
+    cmd = subprocess.call(['/home/ubuntu/hackcambridge/whiteboard/splitter/multicrop.sh', '-d', '15', filename, '/home/ubuntu/hackcambridge/whiteboard/splitter/splits/image_cut.jpg'])
     entity_list = []
     if cmd == 0:
         for filename in os.listdir('/home/ubuntu/hackcambridge/whiteboard/splitter/splits/'):
