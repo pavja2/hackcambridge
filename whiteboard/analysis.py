@@ -71,6 +71,7 @@ def analyze_image(filename):
     # IF buggy, uncomment due to OS compatibility challenges
     try:
         specialized_entities = split_images_from_slide_to_entities(filename)
+        print(specialized_entities)
     except:
         specialized_entities = []
     for entity in specialized_entities:
@@ -116,10 +117,10 @@ def country_analyzer(text, conflicts=[]):
     messages = get_countries_from_text(text)
     conflicts = conflicts
     for message in messages:
-        if message.title in conflicts:
+        if message.message_title in conflicts:
             continue
         else:
-            conflicts.append(message.title)
+            conflicts.append(message.message_title)
             if Message.query.filter_by(message_title=message.message_title, message_text=message.message_text, message_link=message.message_link).first() is None:
                 db.session.add(message)
             db.session.commit()
