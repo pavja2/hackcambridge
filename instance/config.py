@@ -1,4 +1,4 @@
-UPLOAD_FOLDER = 'C:/dev/hack_cambridge/whiteboard/uploads/'
+UPLOAD_FOLDER = '/home/ubuntu/uploads/'
 AWS_ACCESS_KEY = 'AKIAI2U6JUW644B566VQ'
 AWS_SECRET_KEY = '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'
 MICROSOFT_KEY = '09aadc1e91174ff1b8d150f1a52b799c'
