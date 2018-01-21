@@ -122,4 +122,4 @@ def WikipediaAPIfunc (keyphrase):
     return (title, extract, imurl, url)
 
 #Example Function Run
-# WikipediaAPIfunc("Elon Musk")
+#print(WikipediaAPIfunc("Elon Musk"))

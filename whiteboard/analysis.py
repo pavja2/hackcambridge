@@ -5,6 +5,9 @@ from whiteboard.NLP import NLPfun
 from whiteboard.NLPAPI import keyWordExtractorAPI
 from whiteboard.aws_comprehend import get_key_terms, get_named_entities
 from whiteboard.country_finder import get_countries_from_text
+from whiteboard.WikipediaAPI import WikipediaAPIfunc
+from whiteboard.KnowledgeGraphAPI import academiaTest
+from whiteboard.CrossRefAPI import CrossRefAPIfunc
 import boto3
 
 
@@ -17,26 +20,68 @@ def analyze_image(filename):
     """
     message_count = 0
     text = get_plaintext(filename)
-    print(text)
-    print("AWS")
-    print(get_key_terms(text))
-    print("NLPAPI")
-    print(keyWordExtractorAPI(text))
-    print("API_TEST_DONE")
-    #message_count += transcription_analyzer(text)
-    message_count+= entity_based_analyzer(text)
-    message_count+= nlp_analyzer(filename)
-    message_count+= country_analyzer(text)
+    wiki_conflicts = []
+    author_conflicts = []
+    country_conflicts = []
+    element_conflicts = []
+
+    #get_microsoft_wikipedia_messages
+    wiki_conflicts.extend(entity_based_analyzer(text, conflicts=wiki_conflicts))
+
+
+    # AWS Entities
+    aws_entities = get_named_entities(text)
+    for entity in aws_entities:
+        # if the entity is not in wiki conflicts, see if there's a wki page option
+        if entity[0] not in wiki_conflicts:
+            wiki_conflicts.extend(wikify_entry(entity[0], wiki_conflicts))
+        if entity not in author_conflicts and len(entity[0].split()) <= 4:
+            if academiaTest(entity[0]):
+                author_conflicts.append(entity[0])
+                url, title, authors, date = CrossRefAPIfunc(entity[0])
+                if url and title is not None:
+                    if Message.query.filter_by(message_title="Relevant Publication: " + str(title), message_text="Authors: " +  str(authors) + " Date: " + str(date),
+                                               message_link=url).first() is None:
+                        create_and_save_message("Relevant Publication: " + str(title),
+                                                          "Authors: " +  str(authors) + " Date: " + str(date),
+                                                          img_url="http://via.placeholder.com/350x150.png",
+                                                          message_link=url)
+
+
+    # MS Named Entities
+    for entity in keyWordExtractorAPI(text):
+        if entity not in wiki_conflicts:
+            wiki_conflicts.extend(wikify_entry(entity, wiki_conflicts))
+        if entity not in author_conflicts and len(entity.split()) <= 4:
+            if academiaTest(entity):
+                author_conflicts.append(entity)
+                url, title, authors, date = CrossRefAPIfunc(entity)
+                if url and title is not None:
+                    if Message.query.filter_by(message_title="Relevant Publication: " + str(title),
+                                               message_text=  "Authors: " +  str(authors) + " Date: " + str(date),
+                                               message_link=url).first() is None:
+                        create_and_save_message("Relevant Publication: " + str(title),
+                                                          "Authors: " +  str(authors) + " Date: " + str(date),
+                                                          img_url="http://via.placeholder.com/350x150.png",
+                                                          message_link=url)
+
+    # Analyze Country information
+    country_analyzer(text, country_conflicts)
     return 1
 
 
-def entity_based_analyzer(text):
+def entity_based_analyzer(text, conflicts=[]):
     messages = entity_linked_messages(text)
+    conflicts = []
     for message in messages:
-        message.img_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Oxford_University_Coat_Of_Arms.svg/225px-Oxford_University_Coat_Of_Arms.svg.png"
-        db.session.add(message)
+        if message.message_title in conflicts:
+            continue
+        else:
+            conflicts.append(message.message_title)
+            if Message.query.filter_by(message_title=message.message_title, message_text=message.message_text, message_link=message.message_link).first() is None:
+                db.session.add(message)
     db.session.commit()
-    return len(messages)
+    return conflicts
 
 
 def nlp_analyzer(filename):
@@ -45,31 +90,28 @@ def nlp_analyzer(filename):
         create_and_save_message(message_title="Some info about " + str(titles[i]), message_text=str(extracts[i]), img_url=images[i], message_link=urls[i])
     return len(titles)
 
-
-def aws_analyzer(text):
-    aws_entities = get_named_entities(text)
-    titles = []
-    extracts = []
-    images = []
-    urls = []
-    for entity in aws_entities:
-        if entity[1] == "PERSON":
-            title_res, extract_res, image_res, url_res = 1, 1, 1#aws()
-            #TODO: person API cards
-
-            pass
-        else:
-            #TODO: Wikipedia Only
-            pass
-
-def country_analyzer(text):
+def country_analyzer(text, conflicts=[]):
     messages = get_countries_from_text(text)
-    result_count = 0
+    conflicts = conflicts
     for message in messages:
-        db.session.add(message)
-        db.session.commit()
-        result_count +=1
-    return result_count
+        if message.title in conflicts:
+            continue
+        else:
+            conflicts.append(message.title)
+            if Message.query.filter_by(message_title=message.message_title, message_text=message.message_text, message_link=message.message_link).first() is None:
+                db.session.add(message)
+            db.session.commit()
+    return conflicts
+
+def wikify_entry(text_entity, conflicts=[]):
+    conflicts = conflicts
+    title, extract, img_url, wiki_path = WikipediaAPIfunc(text_entity)
+    if title is not None and len(title) > 2 and "may refer to:" not in extract[:32] and wiki_path is not None:
+        conflicts.append(title)
+        if Message.query.filter_by(message_title=title, message_text=extract,
+                                   message_link=img_url).first() is None:
+            create_and_save_message(title, extract, img_url, wiki_path)
+    return conflicts
 
 def create_and_save_message(message_title="", message_text="", img_url="", message_link=""):
     """

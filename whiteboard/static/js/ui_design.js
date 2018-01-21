@@ -16,6 +16,13 @@ var rendered = false;
             complete: poll,
             timeout: 2000
         })}, 1000);
+    if(message_data.results.results.messages.length > 0) {
+        $(".loading").hide();
+    }
+    else{
+        $('.loading').show();
+    }
+
 })();
 
 function render_messages(){
@@ -41,6 +48,13 @@ function activate_buttons(){
             data: {"id" : id}
         });
     });
+
+    $("#clear_board_button").click(function(){
+        $.ajax({
+            method: "POST",
+            url: "/clear_messages"
+        });
+    })
 }
 
 $(document).ready(function(){

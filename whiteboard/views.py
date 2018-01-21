@@ -27,7 +27,7 @@ def uitest():
 
 @app.route('/', methods=["GET"])
 def index():
-    return app.send_static_file('userinterface.html')
+    return app.send_static_file('ui_design.html')
 
 @app.route('/imgupload', methods=["POST"])
 def image_upload():
@@ -82,17 +82,21 @@ def share_message():
         db.session.commit()
         return "Message Shared", 200
 
-
 @app.route('/hide_message', methods=["POST"])
 def hide_message():
     if request.method == "POST":
-        print(request.form)
         if 'id' not in request.form:
             return "Missing ID", 502
         output_message = Message.query.filter_by(id=request.form["id"]).first()
         output_message.hidden = True
         db.session.commit()
         return "Message Hidden", 200
+
+@app.route('/clear_messages', methods=["POST"])
+def clear_messages():
+    if request.method == "POST":
+        db.drop_all()
+        db.create_all()
 
 @app.route('/messages')
 def message_view():

@@ -7,6 +7,7 @@
     <script src="/static/js/popper.min.js"></script>
     <script src="/static/js/jsviews.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/fontawesome-all.min.js"></script>
     <script src="/static/js/ui_design.js"></script>
     <script id="messageListTemplate" type="text/x-jsrender">
     {^{for messages}}
@@ -16,7 +17,7 @@
                 <img class="mr-3 thumbnail-image" src="{^{:img_url}}">
                 <div class="media-body">
                         <div class="btn-group float-right">
-                            <button type="button" class="share-button btn btn-primary" href="#" data-message-id="{^{:id}}">Share</button>
+                            <button type="button" class="share-button btn btn-primary" href="#" data-message-id="{^{:id}}"><img src="/static/spark_logo.png" class='spark-button-icon'>Share</button>
                             <button type="button" class="hide-button btn btn-secondary" href="#" data-message-id="{^{:id}}">Hide</button>
                         </div>
                         <h5 class="mt-0">{^{:message_title}}</h5>
@@ -35,6 +36,9 @@
         <img src="http://via.placeholder.com/64x64.png" width="30" height="30">
         Brightboard!
     </a>
+    <button class="btn" id="clear_board_button">
+        <i class="fas fa-eraser"></i>Clear Board
+    </button>
 </nav>
 <br>
 <div class="container-fluid">
@@ -43,6 +47,9 @@
         </div>
     </div>
 </div>
-
+<div class="loading">
+    <i class="fas fa-spinner fa-4x fa-spin text-muted"></i>
+    <span class="blockquote-footer">Learning...</span>
+</div>
 </body>
 </html>

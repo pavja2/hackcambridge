@@ -1,6 +1,7 @@
 from whiteboard import app
 from urllib.parse import quote
 from whiteboard.models import Message
+from WikipediaAPI import WikipediaAPIfunc
 import requests
 
 headers = {
@@ -40,9 +41,10 @@ def entity_linked_messages(text):
     entity_list = fetch_wiki_entities(text)
     for entity in entity_list:
         if entity[1] != "":
+            page_title, extract_text, img_path, wiki_url = WikipediaAPIfunc(entity[1])
             wiki_link = wiki_base + quote(entity[1])
-            new_message = Message(message_title="Here's the wiki for: " + str(entity[0]), message_text="",
-                                  img_url="", message_link=wiki_link)
+            new_message = Message(message_title=str(entity[0]), message_text=extract_text,
+                                  img_url=img_path, message_link=wiki_link)
             message_list.append(new_message)
     return message_list
 

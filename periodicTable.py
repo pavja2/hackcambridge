@@ -8,8 +8,7 @@ def ChemRec(text):
 		for key in periodicTable:
 			if word.find(key) >= 0 and len(word) == len(key):
 				returnArray.append(periodicTable[key])
-	
-	print returnArray	
-	return returnArray 
+
+	return returnArray
 
 ChemRec("Na Cu N is trOalala")
